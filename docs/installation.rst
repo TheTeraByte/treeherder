@@ -63,40 +63,21 @@ Setting up Vagrant
 Setting up a local Treeherder instance
 --------------------------------------
 
-* Initialize the master database
+* And this line to your **host** machine's /etc/hosts so that you can point your browser to local.treeherder.mozilla.org to reach the VM
 
   .. code-block:: bash
 
-     (venv)vagrant@local:~/treeherder$ ./manage.py init_master_db
-
-* Populate the database with repository data sources
-
-  .. code-block:: bash
-
-     (venv)vagrant@local:~/treeherder$ ./manage.py init_datasources
-
-* Export oauth credentials for all data source projects
-
-  .. code-block:: bash
-
-     (venv)vagrant@local:~/treeherder$ ./manage.py export_project_credentials
-
-* And an entry to your **host** machine's /etc/hosts so that you can point your browser to local.treeherder.mozilla.org to reach it
-
-  .. code-block:: bash
-
+     # Copy this line verbatim (do not adjust the IP)
      192.168.33.10    local.treeherder.mozilla.org
 
 Viewing the local server
 ------------------------
 
-* Start a gunicorn instance listening on port 8000
+* Start a gunicorn instance, to serve API requests:
 
   .. code-block:: bash
 
      (venv)vagrant@local:~/treeherder$ ./bin/run_gunicorn
-
-  all the request sent to local.treeherder.mozilla.org will be proxied to it by varnish/apache.
 
 * Or for development you can use the django runserver instead of gunicorn:
 
@@ -119,7 +100,7 @@ Ingestion tasks populate the database with version control push logs, queued/run
 
   .. code-block:: bash
 
-     (venv)vagrant@local:~/treeherder$ celery -A treeherder worker -B
+     (venv)vagrant@local:~/treeherder$ celery -A treeherder worker -B --concurrency 5
 
   The "-B" option tells the celery worker to startup a beat service, so that periodic tasks can be executed.
   You only need one worker with the beat service enabled. Multiple beat services will result in periodic tasks being executed multiple times.
