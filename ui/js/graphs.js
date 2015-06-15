@@ -7,11 +7,11 @@
 perf.controller('GraphsCtrl', [
   '$state', '$stateParams', '$scope', '$rootScope', '$location', '$modal',
   'thServiceDomain', '$http', '$q', '$timeout', 'PhSeries',
-  'ThRepositoryModel', 'ThOptionCollectionModel', 'ThResultSetModel',
+  'ThRepositoryModel', 'ThOptionCollectionModel', 'thDefaultRepo', 'ThResultSetModel',
   'phTimeRanges',
   function GraphsCtrl($state, $stateParams, $scope, $rootScope, $location,
                       $modal, thServiceDomain, $http, $q, $timeout, PhSeries,
-                      ThRepositoryModel, ThOptionCollectionModel,
+                      ThRepositoryModel, thDefaultRepo, ThOptionCollectionModel,
                       ThResultSetModel, phTimeRanges) {
 
     var availableColors = [ 'red', 'green', 'blue', 'orange', 'purple' ];
@@ -715,9 +715,21 @@ perf.controller('TestChooserCtrl', function($scope, $modalInstance, $http,
   if (defaultProjectName) {
     $scope.selectedProject = _.findWhere(projects, {name: defaultProjectName});
   } else {
-    $scope.selectedProject = projects[0];
+    $scope.selectedProject = find_project_by_name(thDefaultRepo);
   }
   $scope.loadingTestData = false;
+
+  function find_project_by_name(input_string) {
+    for (var index in projects) {
+      if(projects.hasOwnProperty(index)) {
+        if (projects[index].name===input_string) {
+          return projects[index];
+        }  
+      }
+    }
+    return projects[0];
+  }
+
 
   var testInputCreated = false;
 
